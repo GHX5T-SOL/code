@@ -236,6 +236,9 @@ export class TaskCreationSaga extends Saga<
         name: "cloud_run",
         execute: async () => {
           const prAuthorshipMode = input.cloudPrAuthorshipMode ?? "user";
+          const serviceTier = isCodexServiceTier(input.serviceTier)
+            ? input.serviceTier
+            : undefined;
 
           const transport =
             (input.content || input.filePaths?.length) &&
@@ -249,6 +252,7 @@ export class TaskCreationSaga extends Saga<
             adapter: input.adapter,
             model: input.model,
             reasoningLevel: input.reasoningLevel,
+            ...(serviceTier ? { serviceTier } : {}),
             sandboxEnvironmentId: input.sandboxEnvironmentId,
             prAuthorshipMode,
             runSource: input.cloudRunSource ?? "manual",

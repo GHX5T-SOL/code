@@ -49,6 +49,8 @@ vi.mock("@features/sessions/service/service", () => ({
     connectToTask: vi.fn(),
     disconnectFromTask: vi.fn(),
   }),
+  isCodexServiceTier: (value: unknown) =>
+    value === "standard" || value === "fast" || value === "flex",
 }));
 
 vi.mock("@renderer/utils/generateTitle", () => ({
@@ -137,6 +139,7 @@ describe("TaskCreationSaga", () => {
       adapter: "codex",
       model: "gpt-5.4",
       reasoningLevel: "high",
+      serviceTier: "fast",
     });
 
     expect(result.success).toBe(true);
@@ -151,6 +154,7 @@ describe("TaskCreationSaga", () => {
       adapter: "codex",
       model: "gpt-5.4",
       reasoningLevel: "high",
+      serviceTier: "fast",
       sandboxEnvironmentId: undefined,
       prAuthorshipMode: "user",
       runSource: "manual",

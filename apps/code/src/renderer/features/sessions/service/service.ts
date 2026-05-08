@@ -1955,6 +1955,7 @@ export class SessionService {
         adapter: runtimeOptions.adapter,
         model: runtimeOptions.model,
         reasoningLevel: runtimeOptions.reasoningLevel,
+        serviceTier: runtimeOptions.serviceTier,
         resumeFromRunId: session.taskRunId,
         pendingUserMessage: transport.messageText,
         pendingUserArtifactIds:
@@ -2547,7 +2548,10 @@ export class SessionService {
     const previewOptions = await pending;
     const extras = previewOptions
       .filter(
-        (opt) => opt.category === "model" || opt.category === "thought_level",
+        (opt) =>
+          opt.category === "model" ||
+          opt.category === "thought_level" ||
+          opt.category === "service_tier",
       )
       .map((opt) => {
         if (
@@ -3361,6 +3365,7 @@ export class SessionService {
     adapter?: Adapter;
     model?: string;
     reasoningLevel?: string;
+    serviceTier?: CodexServiceTier;
   } {
     const modelOption = getConfigOptionByCategory(
       session.configOptions,
@@ -3369,6 +3374,10 @@ export class SessionService {
     const thoughtLevelOption = getConfigOptionByCategory(
       session.configOptions,
       "thought_level",
+    );
+    const serviceTierOption = getConfigOptionByCategory(
+      session.configOptions,
+      "service_tier",
     );
 
     return {
@@ -3381,6 +3390,9 @@ export class SessionService {
         typeof thoughtLevelOption?.currentValue === "string"
           ? thoughtLevelOption.currentValue
           : (previousRun?.reasoning_effort ?? undefined),
+      serviceTier: isCodexServiceTier(serviceTierOption?.currentValue)
+        ? serviceTierOption.currentValue
+        : undefined,
     };
   }
 
