@@ -32,6 +32,7 @@ const envSchema = z.object({
   POSTHOG_CODE_REASONING_EFFORT: z
     .enum(["low", "medium", "high", "xhigh", "max"])
     .optional(),
+  POSTHOG_TASK_RUN_EVENT_INGEST_TOKEN: z.string().min(1).optional(),
 });
 
 const program = new Command();
@@ -148,6 +149,7 @@ program
     const server = new AgentServer({
       port: parseInt(options.port, 10),
       jwtPublicKey: env.JWT_PUBLIC_KEY,
+      eventIngestToken: env.POSTHOG_TASK_RUN_EVENT_INGEST_TOKEN,
       repositoryPath: options.repositoryPath,
       apiUrl: env.POSTHOG_API_URL,
       apiKey: env.POSTHOG_PERSONAL_API_KEY,
