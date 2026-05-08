@@ -23,6 +23,7 @@ export interface CodexSessionState {
   contextSize?: number;
   contextUsed?: number;
   permissionMode: PermissionMode;
+  serviceTier?: string;
   taskRunId?: string;
   taskId?: string;
 }
@@ -36,6 +37,7 @@ export function createSessionState(
     modeId?: string;
     modelId?: string;
     permissionMode?: PermissionMode;
+    serviceTier?: string;
   },
 ): CodexSessionState {
   return {
@@ -51,6 +53,7 @@ export function createSessionState(
       cachedWriteTokens: 0,
     },
     permissionMode: opts?.permissionMode ?? "auto",
+    serviceTier: opts?.serviceTier,
     taskRunId: opts?.taskRunId,
     taskId: opts?.taskId,
   };

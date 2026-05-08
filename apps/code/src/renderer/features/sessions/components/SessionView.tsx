@@ -12,6 +12,7 @@ import {
   useAdapterForTask,
   useModeConfigOptionForTask,
   usePendingPermissionsForTask,
+  useServiceTierConfigOptionForTask,
   useThoughtLevelConfigOptionForTask,
 } from "@features/sessions/stores/sessionStore";
 import type { Plan } from "@features/sessions/types";
@@ -41,6 +42,7 @@ import { ModelSelector } from "./ModelSelector";
 import { PlanStatusBar } from "./PlanStatusBar";
 import { ReasoningLevelSelector } from "./ReasoningLevelSelector";
 import { RawLogsView } from "./raw-logs/RawLogsView";
+import { ServiceTierSelector } from "./ServiceTierSelector";
 
 interface SessionViewProps {
   events: AcpMessage[];
@@ -129,6 +131,7 @@ export function SessionView({
   const pendingPermissions = usePendingPermissionsForTask(taskId);
   const modeOption = useModeConfigOptionForTask(taskId);
   const thoughtOption = useThoughtLevelConfigOptionForTask(taskId);
+  const serviceTierOption = useServiceTierConfigOptionForTask(taskId);
   const adapter = useAdapterForTask(taskId);
   const { allowBypassPermissions } = useSettingsStore();
   const currentModeId = modeOption?.currentValue;
@@ -175,6 +178,18 @@ export function SessionView({
       );
     },
     [taskId, thoughtOption],
+  );
+
+  const handleServiceTierChange = useCallback(
+    (value: string) => {
+      if (!taskId || !serviceTierOption) return;
+      getSessionService().setSessionConfigOption(
+        taskId,
+        serviceTierOption.id,
+        value,
+      );
+    },
+    [taskId, serviceTierOption],
   );
 
   const sessionId = taskId ?? "default";
@@ -641,6 +656,15 @@ export function SessionView({
                                 thoughtOption={thoughtOption}
                                 adapter={adapter}
                                 onChange={handleThoughtChange}
+                                disabled={!isRunning}
+                              />
+                            ) : null
+                          }
+                          speedSelector={
+                            adapter === "codex" && serviceTierOption ? (
+                              <ServiceTierSelector
+                                serviceTierOption={serviceTierOption}
+                                onChange={handleServiceTierChange}
                                 disabled={!isRunning}
                               />
                             ) : null

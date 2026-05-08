@@ -224,6 +224,8 @@ interface SessionConfig {
   effort?: EffortLevel;
   /** Model to use for the session (e.g. "claude-sonnet-4-6") */
   model?: string;
+  /** Codex service tier, e.g. "standard" or "fast" */
+  serviceTier?: string;
   /** JSON Schema for structured task output — when set, the agent gets a create_output tool */
   jsonSchema?: Record<string, unknown> | null;
 }
@@ -536,6 +538,7 @@ When creating pull requests, add the following footer at the end of the PR descr
       customInstructions,
       effort,
       model,
+      serviceTier,
       jsonSchema,
     } = config;
 
@@ -599,6 +602,7 @@ When creating pull requests, add the following footer at the end of the PR descr
         codexBinaryPath:
           adapter === "codex" ? this.getCodexBinaryPath() : undefined,
         model,
+        serviceTier,
         instructions: adapter === "codex" ? systemPrompt.append : undefined,
         onStructuredOutput: jsonSchema
           ? async (output) => {
@@ -1502,6 +1506,7 @@ For git operations while detached:
         "customInstructions" in params ? params.customInstructions : undefined,
       effort: "effort" in params ? params.effort : undefined,
       model: "model" in params ? params.model : undefined,
+      serviceTier: "serviceTier" in params ? params.serviceTier : undefined,
       jsonSchema: "jsonSchema" in params ? params.jsonSchema : undefined,
     };
   }
@@ -1767,9 +1772,37 @@ For git operations while detached:
         currentValue: resolvedModelId,
         options: modelOptions,
         category: "model",
-        description: "Choose which model Claude should use",
+        description: `Choose which model ${adapter === "codex" ? "Codex" : "Claude"} should use`,
       },
     ];
+
+    if (adapter === "codex") {
+      configOptions.push({
+        id: "service_tier",
+        name: "Speed",
+        type: "select",
+        currentValue: "standard",
+        options: [
+          {
+            value: "standard",
+            name: "Standard",
+            description: "Default Codex service tier",
+          },
+          {
+            value: "fast",
+            name: "Fast",
+            description: "Request Codex fast mode for lower latency",
+          },
+          {
+            value: "flex",
+            name: "Flex",
+            description: "Request Codex flex mode",
+          },
+        ],
+        category: "service_tier",
+        description: "Choose the Codex service tier for new turns",
+      });
+    }
 
     const effortOpts = getReasoningEffortOptions(adapter, resolvedModelId);
     if (effortOpts) {

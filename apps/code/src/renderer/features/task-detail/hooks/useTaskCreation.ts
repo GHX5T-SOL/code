@@ -39,6 +39,7 @@ interface UseTaskCreationOptions {
   adapter?: "claude" | "codex";
   model?: string;
   reasoningLevel?: string;
+  serviceTier?: string;
   environmentId?: string | null;
   sandboxEnvironmentId?: string;
   signalReportId?: string;
@@ -64,6 +65,7 @@ function prepareTaskInput(
     adapter?: "claude" | "codex";
     model?: string;
     reasoningLevel?: string;
+    serviceTier?: string;
     environmentId?: string | null;
     sandboxEnvironmentId?: string;
     signalReportId?: string;
@@ -93,6 +95,7 @@ function prepareTaskInput(
     adapter: options.adapter,
     model: options.model,
     reasoningLevel: options.reasoningLevel,
+    serviceTier: options.serviceTier,
     environmentId: options.environmentId ?? undefined,
     sandboxEnvironmentId: options.sandboxEnvironmentId,
     cloudPrAuthorshipMode:
@@ -180,6 +183,7 @@ export function useTaskCreation({
   adapter,
   model,
   reasoningLevel,
+  serviceTier,
   environmentId,
   sandboxEnvironmentId,
   signalReportId,
@@ -229,6 +233,7 @@ export function useTaskCreation({
         adapter,
         model,
         reasoningLevel,
+        serviceTier,
         environmentId,
         sandboxEnvironmentId,
         signalReportId,
@@ -286,6 +291,7 @@ export function useTaskCreation({
     adapter,
     model,
     reasoningLevel,
+    serviceTier,
     environmentId,
     sandboxEnvironmentId,
     signalReportId,

@@ -5,6 +5,7 @@ import { useProvisioningStore } from "@features/provisioning/stores/provisioning
 import {
   type ConnectParams,
   getSessionService,
+  isCodexServiceTier,
 } from "@features/sessions/service/service";
 import {
   getCloudPromptTransport,
@@ -55,6 +56,7 @@ export interface TaskCreationInput {
   adapter?: "claude" | "codex";
   model?: string;
   reasoningLevel?: string;
+  serviceTier?: string;
   environmentId?: string;
   sandboxEnvironmentId?: string;
   cloudPrAuthorshipMode?: PrAuthorshipMode;
@@ -326,6 +328,9 @@ export class TaskCreationSaga extends Saga<
           if (input.model) connectParams.model = input.model;
           if (input.reasoningLevel)
             connectParams.reasoningLevel = input.reasoningLevel;
+          if (isCodexServiceTier(input.serviceTier)) {
+            connectParams.serviceTier = input.serviceTier;
+          }
 
           getSessionService().connectToTask(connectParams);
           return { taskId: task.id };

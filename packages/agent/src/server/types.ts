@@ -27,4 +27,5 @@ export interface AgentServerConfig {
   runtimeAdapter?: "claude" | "codex";
   model?: string;
   reasoningEffort?: "low" | "medium" | "high" | "xhigh" | "max";
+  serviceTier?: string;
 }
