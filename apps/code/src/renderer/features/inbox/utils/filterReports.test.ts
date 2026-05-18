@@ -1,6 +1,7 @@
 import type { SignalReport } from "@shared/types";
 import { describe, expect, it } from "vitest";
 import {
+  buildPriorityFilterParam,
   buildSignalReportListOrdering,
   buildSuggestedReviewerFilterParam,
   filterReportsBySearch,
@@ -151,5 +152,21 @@ describe("buildSuggestedReviewerFilterParam", () => {
         "",
       ]),
     ).toBe("reviewer-1,reviewer-2");
+  });
+});
+
+describe("buildPriorityFilterParam", () => {
+  it("returns undefined for an empty array", () => {
+    expect(buildPriorityFilterParam([])).toBeUndefined();
+  });
+
+  it("joins priorities with commas", () => {
+    expect(buildPriorityFilterParam(["P0", "P1", "P2"])).toBe("P0,P1,P2");
+  });
+
+  it("deduplicates priorities", () => {
+    expect(buildPriorityFilterParam(["P0", "P1", "P0", "P2", "P1"])).toBe(
+      "P0,P1,P2",
+    );
   });
 });

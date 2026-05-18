@@ -18,6 +18,7 @@ describe("inboxSignalsFilterStore", () => {
       ],
       sourceProductFilter: [],
       suggestedReviewerFilter: [],
+      priorityFilter: [],
     });
   });
 
@@ -36,6 +37,7 @@ describe("inboxSignalsFilterStore", () => {
     ]);
     expect(state.sourceProductFilter).toEqual([]);
     expect(state.suggestedReviewerFilter).toEqual([]);
+    expect(state.priorityFilter).toEqual([]);
   });
 
   it("setSort updates field and direction", () => {
@@ -106,12 +108,50 @@ describe("inboxSignalsFilterStore", () => {
     ]);
   });
 
+  it("togglePriority adds and removes priorities", () => {
+    useInboxSignalsFilterStore.getState().togglePriority("P0");
+    expect(useInboxSignalsFilterStore.getState().priorityFilter).toEqual([
+      "P0",
+    ]);
+
+    useInboxSignalsFilterStore.getState().togglePriority("P1");
+    expect(useInboxSignalsFilterStore.getState().priorityFilter).toEqual([
+      "P0",
+      "P1",
+    ]);
+
+    useInboxSignalsFilterStore.getState().togglePriority("P0");
+    expect(useInboxSignalsFilterStore.getState().priorityFilter).toEqual([
+      "P1",
+    ]);
+  });
+
+  it("setPriorityFilter de-duplicates priorities", () => {
+    useInboxSignalsFilterStore.getState().setPriorityFilter(["P0", "P1", "P0"]);
+
+    expect(useInboxSignalsFilterStore.getState().priorityFilter).toEqual([
+      "P0",
+      "P1",
+    ]);
+  });
+
+  it("persists priorityFilter", () => {
+    useInboxSignalsFilterStore.getState().setPriorityFilter(["P0", "P1"]);
+
+    const raw = localStorage.getItem("inbox-signals-filter-storage");
+    expect(raw).toBeTruthy();
+    const persisted = JSON.parse(raw as string);
+
+    expect(persisted.state.priorityFilter).toEqual(["P0", "P1"]);
+  });
+
   it("resetFilters restores defaults across all filter fields", () => {
     const store = useInboxSignalsFilterStore.getState();
     store.setSearchQuery("hello");
     store.setStatusFilter(["ready"]);
     store.toggleSourceProduct("github");
     store.setSuggestedReviewerFilter(["reviewer-1"]);
+    store.setPriorityFilter(["P0", "P1"]);
 
     useInboxSignalsFilterStore.getState().resetFilters();
 
@@ -127,6 +167,7 @@ describe("inboxSignalsFilterStore", () => {
     ]);
     expect(state.sourceProductFilter).toEqual([]);
     expect(state.suggestedReviewerFilter).toEqual([]);
+    expect(state.priorityFilter).toEqual([]);
   });
 
   it("resetFilters preserves sort preferences", () => {

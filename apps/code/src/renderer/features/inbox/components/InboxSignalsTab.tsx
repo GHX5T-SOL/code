@@ -22,6 +22,7 @@ import { useInboxSignalsFilterStore } from "@features/inbox/stores/inboxSignalsF
 import { useInboxSignalsSidebarStore } from "@features/inbox/stores/inboxSignalsSidebarStore";
 import { useInboxSourcesDialogStore } from "@features/inbox/stores/inboxSourcesDialogStore";
 import {
+  buildPriorityFilterParam,
   buildSignalReportListOrdering,
   buildStatusFilterParam,
   buildSuggestedReviewerFilterParam,
@@ -66,6 +67,7 @@ export function InboxSignalsTab() {
   const suggestedReviewerFilter = useInboxSignalsFilterStore(
     (s) => s.suggestedReviewerFilter,
   );
+  const priorityFilter = useInboxSignalsFilterStore((s) => s.priorityFilter);
 
   // ── GitHub integration ───────────────────────────────────────────────
   const { hasGithubIntegration } = useRepositoryIntegration();
@@ -122,6 +124,7 @@ export function InboxSignalsTab() {
         suggestedReviewerFilter.length > 0
           ? buildSuggestedReviewerFilterParam(suggestedReviewerFilter)
           : undefined,
+      priority: buildPriorityFilterParam(priorityFilter),
     }),
     [
       statusFilter,
@@ -129,6 +132,7 @@ export function InboxSignalsTab() {
       sortDirection,
       sourceProductFilter,
       suggestedReviewerFilter,
+      priorityFilter,
     ],
   );
 
@@ -386,6 +390,7 @@ export function InboxSignalsTab() {
   const hasActiveFilters =
     sourceProductFilter.length > 0 ||
     suggestedReviewerFilter.length > 0 ||
+    priorityFilter.length > 0 ||
     statusFilter.length < 5;
   const shouldShowTwoPane =
     hasReports ||
